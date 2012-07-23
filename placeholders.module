@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function placeholders_menu() {
+	return array(
+		'admin/config/development/placeholders' => array(
+			'title' => 'Placeholder blocks',
+			'description' => 'Manage your placeholder blocks.',
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array('placeholders_admin'),
+			'access arguments' => array('administer blocks'),
+			'file' => 'placeholders.admin.inc',
+		),
+	);
+}
+
+function _get_placeholder_types($val = null) {
+	return array('tiny' => $val, 'small' => $val, 'medium' => $val, 'large' => $val);
+}
+
+function _get_placeholders() {
+	$settings = (object) variable_get('placeholders', array());
+	$settings->blocks = isset($settings->blocks) ? $settings->blocks : _get_placeholder_types(0);
+	$settings->_show_blocks = true;
+	return $settings;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function placeholders_block_info() {
+	$sizes = _get_placeholders();
+	$blocks = array();
+
+	foreach ($sizes->blocks as $size => $count) {
+		for ($i = 0; $i < $count; $i++) {
+			$blocks[$size . '_' . $i] = array(
+				'info' => 'Placeholder: ' . t(ucwords($size) . ' #' . ($i + 1)),
+				'cache' => DRUPAL_CACHE_GLOBAL
+			);
+		}	
+	}
+	return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function placeholders_block_view($delta = '') {
+	if (preg_match('/^(.+)_([0-9]+)$/', $delta, $size)) {
+		$sizes = _get_placeholders();
+
+		$type = $size[1];
+		if ($size[2] < $sizes->blocks[$type]) {
+			$path = drupal_get_path('module', 'placeholders');
+			drupal_add_css($path . '/placeholders.css');
+			drupal_add_js($path . '/placeholders.js');
+
+			return array(
+				'subject' => '',
+				'content' => $type,
+			);
+		}
+	}
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function placeholders_preprocess_block(&$variables) {
+	if ($variables['block']->module == 'placeholders') {
+		$variables['elements']['#block']->subject = '';
+		$variables['classes_array'][] = 'placeholder-' . $variables['content'];
+	}
+}

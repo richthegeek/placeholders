@@ -1,0 +1,5 @@
+name = Placeholder Blocks
+description = Add any number of placeholder blocks for testing
+core = 7.x
+
+dependencies[] = block

@@ -1,0 +1,28 @@
+.block-placeholders {
+	display: block;
+	text-align: center;
+
+	background: #eee;
+	border: 1px solid #aaa;
+	color: #aaa;
+	font-size: 24px;
+	font-weight: bold;
+}
+
+
+.block.placeholder-tiny .content {
+	height: 50px;
+	line-height: 50px;
+}
+.block.placeholder-small .content {
+	height: 100px;
+	line-height: 100px;
+}
+.block.placeholder-medium .content {
+	height: 200px;
+	line-height: 200px;
+}
+.block.placeholder-large .content {
+	height: 400px;
+	line-height: 400px;
+}
